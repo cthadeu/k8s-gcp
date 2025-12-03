@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: haproxy-service
+  namespace: prod-sc
+spec:
+  type: LoadBalancer
+  selector:
+    app: haproxy
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 80
+    - protocol: TCP
+      name: bpserver
+      port: 8090
+      targetPort: 8090
+  loadBalancerIP: 35.199.97.193

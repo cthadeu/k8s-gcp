@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-bpserver-sidecar
+  namespace: prod-jae
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-bpserver-sidecar
+  template:
+    metadata:
+      labels:
+        app: api-bpserver-sidecar
+    spec:
+      containers:
+        - name: api-bpserver-sidecar
+          image: cthadeu/api-bpserver-sidecar:0.0.5
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: api-bp-server-sidecer-config
+      imagePullSecrets:
+        - name: cthadeu-dockerhub

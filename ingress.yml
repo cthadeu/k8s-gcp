@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nginx-pos
+  namespace: prod-sc
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pos.partiubilhetagemdigital.com.br
+      http:
+        paths:
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: api-pos-gateway-service
+                port:
+                  number: 80

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haproxy
+  namespace: prod-sc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haproxy
+  template:
+    metadata:
+      labels:
+        app: haproxy
+    spec:
+      containers:
+      - name: haproxy
+        image: haproxy:2.9
+        volumeMounts:
+        - name: config
+          mountPath: /usr/local/etc/haproxy/haproxy.cfg
+          subPath: haproxy.cfg
+        ports:
+        - containerPort: 80
+        securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+
+      volumes:
+      - name: config
+        configMap:
+          name: haproxy-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-config
+  namespace: prod-sc
+data:
+  haproxy.cfg: |
+    global
+      daemon
+
+    defaults
+      mode http
+      timeout connect 5000ms
+      timeout client 50000ms
+      timeout server 50000ms
+
+    frontend http-in
+      bind *:80
+      default_backend servers
+
+    backend servers
+      server srv1 api-pos-gateway-service:80
+
+    frontend bpserver
+      mode tcp
+      bind :8090
+      default_backend bpserver_instances
+
+
+    backend bpserver_instances
+      mode tcp
+      balance roundrobin
+      server s1 bp-server-service:8090
+

@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sam-balance-notifier
+  namespace: prod-jae
+spec:
+  schedule: "0 */3 * * *" # A cada 3 horas
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: sam-balance-notifier
+              image: cthadeu/sam-balancer-notifier:0.0.11
+              imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure

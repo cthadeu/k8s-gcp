@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: permitir-tudo-para-ingress
+  namespace: prod-sc # ou o namespace onde está seu Ingress Controller
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx-pos  # ajuste conforme o label dos pods
+  policyTypes:
+    - Ingress
+  ingress:
+    - {}  # 👈 isso libera tudo!

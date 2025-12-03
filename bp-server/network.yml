@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-lb-to-pods
+  namespace: prod-sc
+spec:
+  podSelector:
+    matchLabels:
+      app: bp-server   # pods que vão receber o tráfego
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 0.0.0.0/0  # ou restrinja para o IP do LoadBalancer ou faixa permitida
+      ports:
+        - protocol: TCP
+          port: 8090

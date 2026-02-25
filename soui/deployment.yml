@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pos-soui-config
+  namespace: prod-sc
+data:
+  FIREBASE_PROJECT_ID: "validador-sc"
+  FIREBASE_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDB+rbWiNfySuxN\nC3GRp2KUplaCgN309L+BL2COGVObjYtu7+DUWsS/AthwHMU378Pse48AcYMOGm20\nPJSoZSyUB0vI3dyxSp6C7WG1iIdfW2zTwPrrE6jHhsetT+0f8zN7M7tbjBa0sanm\n4zGH+HtmaUgsw6uXlHK2cPfMb5vKDvFlDnLbI7j1JXSbPMhgauqQQ6T76VvidFZS\n0ZqmD4SjaZmubGIU8msFim1j5nSYUHW/SSYcZGSN9sCLbtmWcKDcNfka/3SCmHtk\nv6TVmHtDJlm4YC4AYo9Z1faUnQ8VhTjWkf6DN0juYUSvQ2wmGXVrEZG8qzC8vWpY\nCR6eByG7AgMBAAECggEAMtV3jcAdy0acJ1Kc5/00Bd2TZS7NO9DZ0MpwJLz5XpXY\n2PEu+6dv0Ni3jKXVfyOrtfDpWEXnAM6nOij4Eis1Y/OHhjOyDpoN8SSxSuflBfXJ\nDrMPboRf4i3tbPs5mnpa3un/Ku4K0z6N1k5qoAXbnMpxWh3K/XWvHCV9ossKygfs\nWHLYwdfpuvTZ4jm3K/GS63+SiCfMbwapo4/h6Of0bInkhULEv6KQjvbWoksrpC6g\nxCsRWiF7FQ+Kg+XcOWdDg1AAjDSC4H2DTeJy6/pIYNVktd/TNzfBp+7mWzdWVXVJ\noj50RUvnxMWVO5bknJEd+uGDuUdKyORQ8Er1dG+6iQKBgQDv4wOlf0nQpjRVYVwk\nP8oZ/bi33dQgxDuzYnKHEMHQSHjupzOylacvzlc4xuJ7VNv42J3rzV67GKnGWIH+\n7xtFqFYDynW85TKiGHxvMNvalvpF2AARksiBMnym0AmEOD0hsHleFMZvbx1kszOY\nJWTRn4BSpyeOQ1tBVynqjV82qQKBgQDPAkvkkHdZXQ51gd0aPwozbygIey/tCVoF\n5x1TzPbBAqfaLjQKz82QnjsHlLVcgjZDqm3xMzuSuACdGwSkWQpw3BJm0b+IknGX\nGGEJ+l4iY4J8bAFS11gVgcRJTfILakvaT2vYfQu/+ckl1pJinWJ+P1kxB+t7iZO9\nTL55VX7nwwKBgEO7/QaY93XDyFknYYYWwPEv1B2OtFwALL9NF/uNPryaChORAKb3\nXLrB75zng4HBh08vkv/HAG2h3CZWTXZ3e2Li0k7FtxL8QJzGfzRCPoHtSYO5JuPP\nZ3AbmljbuyQrYQ+HLe3jvdgvLsSFWRcnz9zkxa4Q5rljyXucqghBnNXpAoGAHTu+\nyfVY1WbdztxbBATZBPByn9f9qaTDcMf1jUsJobIlUBtsQAaeigi+X1Cx1/GPhjjA\nM+q/Q/X2KDmTiz4DynJZqul9+eRsZCEOOyF/P6371GRQP4mnp8nelVeLke8d7SOA\nIF9wVFkK/evyWjjNmvSJPPJYX+bK1VXMJEhdlo8CgYEAttowz63dQU214vXsJtpo\niXwN87JVdyBDYKBxv4CzBD+PzynWvxu5KZWS6Aw7fS3Agl8lQymCW5iIKmfWaxmo\neATUtg0/WKKQBbCERn+TlnLihZLBQ6zHkJc3HVq7Uv2TZQknwmyeFBBNgpfXhRlY\nA+HCQZdJ0sJRe8FtAhwIRTc=\n-----END PRIVATE KEY-----\n"
+  FIREBASE_CLIENT_EMAIL: "firebase-adminsdk-fbsvc@validador-sc.iam.gserviceaccount.com"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pos-soui
+  namespace: prod-sc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pos-soui
+  template:
+    metadata:
+      labels:
+        app: pos-soui
+    spec:
+      containers:
+        - name: pos-soui
+          image: cthadeu/soui:0.0.4
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: pos-soui-config
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      imagePullSecrets:
+        - name: cthadeu-dockerhub
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pos-soui-service
+  namespace: prod-sc
+spec:
+  selector:
+    app: pos-soui
+  ports:
+    - port: 80
+      targetPort: 3001
+  type: LoadBalancer

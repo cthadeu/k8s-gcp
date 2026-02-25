@@ -12,6 +12,9 @@ spec:
         spec:
           containers:
             - name: reunidas-consumer
-              image: cthadeu/reunidas-consumer:0.0.8
+              image: cthadeu/reunidas-consumer:0.0.11
               imagePullPolicy: IfNotPresent
           restartPolicy: Never
+          imagePullSecrets:
+          - name: cthadeu-dockerhub
+

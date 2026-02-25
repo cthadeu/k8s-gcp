@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jobs-pos-gateway-config
+  namespace: prod-sc
+data:
+  PRAXIOS_BASE_HOST: "https://oci-parceiros2.praxioluna.com.br/Autumn"
+  ENV: "prod"
+  DB_HOST: "jdbc:postgresql://10.88.224.14:5432/vendas"
+  DB_USERNAME: "postgres"
+  DB_PASSWORD: "##billingpay2025"
+

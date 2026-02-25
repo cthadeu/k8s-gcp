@@ -12,6 +12,9 @@ spec:
         spec:
           containers:
             - name: sam-balance-notifier
-              image: cthadeu/sam-balancer-notifier:0.0.11
-              imagePullPolicy: IfNotPresent
+              image: gcr.io/validador-producao/sam-balancer-notifier:0.0.14              
+              imagePullPolicy: Always
           restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: cthadeu-dockerhub
+

@@ -6,14 +6,19 @@ brew install google-cloud-sdk
 brew install kubectl
 ```
 
+### Instalar gcloud cli ( ArchLinux )
+```
+sudo pacman -S google-cloud-sdk
+```
+
 
 ### Configuracao do gcloud cli
 
 ```
 gcloud auth login
-gcloud config set project validador-bp-t20-rio
+gcloud config set project validador-producao
 gcloud components install kubectl
-gcloud container clusters get-credentials bp-kubernets-cluster --region southamerica-east1 --project validador-bp-t20-rio
+gcloud container clusters get-credentials k8s-bp-cluter --region southamerica-east1 --project validador-producao
 ```
 
 ### Criar namespace
